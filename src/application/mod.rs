@@ -1,104 +1,78 @@
 //! Application layer - Use cases and business logic coordination
 
-use crate::domain::{Element, ElementType};
+use crate::domain::{Element, ElementType, Point};
+use nalgebra::Vector3;
 
-/// Service for converting domain elements to geometric primitives
+/// Service for semantic architectural operations
 pub struct GeometryService;
 
 impl GeometryService {
-    /// Convert an element to triangles for rendering
-    pub fn element_to_triangles(elem: &Element) -> Vec<stl_io::Triangle> {
-        match elem.element_type {
-            ElementType::Wall => Self::wall_to_triangles(elem),
-            ElementType::Door => Self::door_to_triangles(elem),
-            ElementType::Window => Self::window_to_triangles(elem),
-            _ => Self::wall_to_triangles(elem), // Default to wall
-        }
+    /// Convert an element to a simple mesh representation
+    /// TODO: Replace with proper csgrs integration once API is understood
+    pub fn element_to_mesh(_elem: &Element) -> String {
+        // Placeholder - return element type as string for now
+        "mesh_placeholder".to_string()
     }
 
-    fn wall_to_triangles(elem: &Element) -> Vec<stl_io::Triangle> {
-        let mut triangles = Vec::new();
-        
-        // Create a simple box for the wall (convert f64 to f32)
-        let p1 = stl_io::Vector::new([elem.position.x as f32, elem.position.y as f32, elem.position.z as f32]);
-        let p2 = stl_io::Vector::new([(elem.position.x + elem.dimensions.x) as f32, elem.position.y as f32, elem.position.z as f32]);
-        let p3 = stl_io::Vector::new([(elem.position.x + elem.dimensions.x) as f32, elem.position.y as f32, (elem.position.z + elem.dimensions.y) as f32]);
-        let p4 = stl_io::Vector::new([elem.position.x as f32, elem.position.y as f32, (elem.position.z + elem.dimensions.y) as f32]);
-        let p5 = stl_io::Vector::new([elem.position.x as f32, elem.position.y as f32, (elem.position.z + elem.dimensions.z) as f32]);
-        let p6 = stl_io::Vector::new([(elem.position.x + elem.dimensions.x) as f32, elem.position.y as f32, (elem.position.z + elem.dimensions.z) as f32]);
-        let p7 = stl_io::Vector::new([(elem.position.x + elem.dimensions.x) as f32, elem.position.y as f32, (elem.position.z + elem.dimensions.y + elem.dimensions.z) as f32]);
-        let p8 = stl_io::Vector::new([elem.position.x as f32, elem.position.y as f32, (elem.position.z + elem.dimensions.y + elem.dimensions.z) as f32]);
-        
-        // Front face
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([0.0, 0.0, 1.0]),
-            vertices: [p1, p2, p3],
-        });
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([0.0, 0.0, 1.0]),
-            vertices: [p1, p3, p4],
-        });
-        
-        // Back face
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([0.0, 0.0, -1.0]),
-            vertices: [p5, p7, p6],
-        });
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([0.0, 0.0, -1.0]),
-            vertices: [p5, p8, p7],
-        });
-        
-        // Left face
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([-1.0, 0.0, 0.0]),
-            vertices: [p1, p4, p8],
-        });
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([-1.0, 0.0, 0.0]),
-            vertices: [p1, p8, p5],
-        });
-        
-        // Right face
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([1.0, 0.0, 0.0]),
-            vertices: [p2, p6, p7],
-        });
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([1.0, 0.0, 0.0]),
-            vertices: [p2, p7, p3],
-        });
-        
-        // Top face
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([0.0, 1.0, 0.0]),
-            vertices: [p4, p3, p7],
-        });
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([0.0, 1.0, 0.0]),
-            vertices: [p4, p7, p8],
-        });
-        
-        // Bottom face
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([0.0, -1.0, 0.0]),
-            vertices: [p1, p6, p2],
-        });
-        triangles.push(stl_io::Triangle {
-            normal: stl_io::Vector::new([0.0, -1.0, 0.0]),
-            vertices: [p1, p5, p6],
-        });
-        
-        triangles
+    /// Calculate distance between two elements using nalgebra
+    pub fn distance_between(elem1: &Element, elem2: &Element) -> f64 {
+        let pos1 = Vector3::from(elem1.position);
+        let pos2 = Vector3::from(elem2.position);
+        (pos1 - pos2).norm()
     }
 
-    fn door_to_triangles(elem: &Element) -> Vec<stl_io::Triangle> {
-        // Similar to wall but thinner
-        Self::wall_to_triangles(elem)
+    /// Check if two elements intersect using bounding box
+    pub fn elements_intersect(elem1: &Element, elem2: &Element) -> bool {
+        // Simple bounding box intersection for now
+        let (x1, y1, z1) = (elem1.position.x, elem1.position.y, elem1.position.z);
+        let (x2, y2, z2) = (
+            x1 + elem1.dimensions.x,
+            y1 + elem1.dimensions.y,
+            z1 + elem1.dimensions.z,
+        );
+        let (x3, y3, z3) = (elem2.position.x, elem2.position.y, elem2.position.z);
+        let (x4, y4, z4) = (
+            x3 + elem2.dimensions.x,
+            y3 + elem2.dimensions.y,
+            z3 + elem2.dimensions.z,
+        );
+
+        x1 < x4 && x2 > x3 && y1 < y4 && y2 > y3 && z1 < z4 && z2 > z3
     }
 
-    fn window_to_triangles(elem: &Element) -> Vec<stl_io::Triangle> {
-        // Similar to wall but thinner
-        Self::wall_to_triangles(elem)
+    /// Get elements within a certain distance of a point
+    pub fn elements_near_point(elements: &[Element], point: Point, radius: f64) -> Vec<&Element> {
+        let point_vec = Vector3::from(point);
+        elements
+            .iter()
+            .filter(|elem| {
+                let elem_pos = Vector3::from(elem.position);
+                (elem_pos - point_vec).norm() <= radius
+            })
+            .collect()
     }
-} 
+
+    /// Find walls that connect to a given wall
+    pub fn connected_walls<'a>(elements: &'a [Element], wall: &Element) -> Vec<&'a Element> {
+        elements
+            .iter()
+            .filter(|elem| {
+                matches!(elem.element_type, ElementType::Wall)
+                    && Self::elements_intersect(elem, wall)
+            })
+            .collect()
+    }
+
+    /// Create a room by combining walls (semantic operation)
+    pub fn create_room(elements: &[Element]) -> Vec<&Element> {
+        elements
+            .iter()
+            .filter(|elem| matches!(elem.element_type, ElementType::Wall))
+            .collect()
+    }
+
+    /// Create an opening (door/window) by finding intersecting elements
+    pub fn create_opening(wall: &Element, opening: &Element) -> bool {
+        Self::elements_intersect(wall, opening)
+    }
+}

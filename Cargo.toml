@@ -12,6 +12,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 nalgebra = "0.32"  # 3D math library - vectors, matrices, transformations
 stl_io = "0.6"     # STL file reading/writing
+csgrs = { version = "0.20", features = ["stl-io", "svg-io", "f64"] }  # CSG operations for architectural modeling
 
 [dev-dependencies]
 tempfile = "3.0"

@@ -1,8 +1,9 @@
 //! Domain layer - Core business logic and geometric primitives
 
+use nalgebra::Vector3;
 use std::fmt;
 
-/// 3D point in space
+/// 3D point in space (aligned with nalgebra Vector3)
 #[derive(Debug, Clone, Copy)]
 pub struct Point {
     pub x: f64,
@@ -10,12 +11,44 @@ pub struct Point {
     pub z: f64,
 }
 
-/// 3D vector
+impl From<Point> for Vector3<f64> {
+    fn from(point: Point) -> Self {
+        Vector3::new(point.x, point.y, point.z)
+    }
+}
+
+impl From<Vector3<f64>> for Point {
+    fn from(vector: Vector3<f64>) -> Self {
+        Point {
+            x: vector.x,
+            y: vector.y,
+            z: vector.z,
+        }
+    }
+}
+
+/// 3D vector (aligned with nalgebra Vector3)
 #[derive(Debug, Clone, Copy)]
 pub struct Vector {
     pub x: f64,
     pub y: f64,
     pub z: f64,
+}
+
+impl From<Vector> for Vector3<f64> {
+    fn from(vector: Vector) -> Self {
+        Vector3::new(vector.x, vector.y, vector.z)
+    }
+}
+
+impl From<Vector3<f64>> for Vector {
+    fn from(vector: Vector3<f64>) -> Self {
+        Vector {
+            x: vector.x,
+            y: vector.y,
+            z: vector.z,
+        }
+    }
 }
 
 /// Types of architectural elements
@@ -30,7 +63,7 @@ pub enum ElementType {
     Roof,
 }
 
-/// An architectural element
+/// An architectural element with semantic properties
 #[derive(Debug, Clone)]
 pub struct Element {
     pub id: String,
@@ -38,6 +71,8 @@ pub struct Element {
     pub position: Point,
     pub dimensions: Vector,
     pub normal: Vector,
+    pub material: Option<String>,
+    pub properties: std::collections::HashMap<String, String>,
 }
 
 // Pure factory functions (FP style)
@@ -57,13 +92,20 @@ pub fn up_vector() -> Vector {
     vector(0.0, 0.0, 1.0)
 }
 
-pub fn element(id: String, element_type: ElementType, position: Point, dimensions: Vector) -> Element {
+pub fn element(
+    id: String,
+    element_type: ElementType,
+    position: Point,
+    dimensions: Vector,
+) -> Element {
     Element {
         id,
         element_type,
         position,
         dimensions,
         normal: up_vector(), // Sensible default
+        material: None,
+        properties: std::collections::HashMap::new(),
     }
 }
 
@@ -89,6 +131,14 @@ pub fn with_normal(normal: Vector) -> impl Fn(Element) -> Element {
     }
 }
 
+pub fn with_material(material: String) -> impl Fn(Element) -> Element {
+    let material_clone = material.clone();
+    move |mut elem: Element| {
+        elem.material = Some(material_clone.clone());
+        elem
+    }
+}
+
 // Higher-order function for composition
 pub fn compose<A, B, C>(f: impl Fn(B) -> C, g: impl Fn(A) -> B) -> impl Fn(A) -> C {
     move |x| f(g(x))
@@ -104,13 +154,18 @@ pub fn door(id: String, position: Point, width: f64, height: f64) -> Element {
 }
 
 pub fn window(id: String, position: Point, width: f64, height: f64) -> Element {
-    element(id, ElementType::Window, position, vector(width, height, 0.1))
+    element(
+        id,
+        ElementType::Window,
+        position,
+        vector(width, height, 0.1),
+    )
 }
 
 // Function that transforms elements (like map in FP)
-pub fn transform_element<F>(elem: Element, transform: F) -> Element 
-where 
-    F: Fn(Element) -> Element 
+pub fn transform_element<F>(elem: Element, transform: F) -> Element
+where
+    F: Fn(Element) -> Element,
 {
     transform(elem)
 }
@@ -125,4 +180,4 @@ impl fmt::Display for Vector {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "({}, {}, {})", self.x, self.y, self.z)
     }
-} 
+}

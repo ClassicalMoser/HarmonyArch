@@ -2,12 +2,12 @@
 //!
 //! A domain-driven design for architectural modeling with hexagonal architecture.
 
-pub mod domain;
 pub mod application;
-pub mod infrastructure;
 pub mod composition;
+pub mod domain;
+pub mod infrastructure;
 
 // Re-export commonly used domain types
-pub use domain::{Point, Vector, Element, ElementType};
 pub use application::GeometryService;
+pub use domain::{Element, ElementType, Point, Vector};
 pub use infrastructure::StlRenderer;
