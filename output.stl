@@ -1,7 +1,254 @@
 solid HarmonyArch
-  // Semantic modeling - geometry outsourced to csgrs
-  // Elements: 3
-  // north_wall at (0, 0, 0)
-  // main_door at (3, 0, 0)
-  // main_window at (7, 0, 1)
+  facet normal 0.9396926207859084 -0.34202014332566877 0
+    outer loop
+      vertex 3.430853176489542 -4.599766125428392 0
+      vertex 6.85105460974623 4.7971600824306915 0
+      vertex 3.430853176489542 -4.599766125428392 3
+    endloop
+  endfacet
+  facet normal 0.9396926207859084 -0.34202014332566877 0
+    outer loop
+      vertex 6.85105460974623 4.7971600824306915 0
+      vertex 6.85105460974623 4.7971600824306915 3
+      vertex 3.430853176489542 -4.599766125428392 3
+    endloop
+  endfacet
+  facet normal -0.9396926207859084 0.3420201433256688 0
+    outer loop
+      vertex 6.569146823510458 4.899766125428393 0
+      vertex 3.1489453902537696 -4.497160082430691 0
+      vertex 6.569146823510458 4.899766125428393 3
+    endloop
+  endfacet
+  facet normal -0.9396926207859084 0.3420201433256688 0
+    outer loop
+      vertex 3.1489453902537696 -4.497160082430691 0
+      vertex 3.1489453902537696 -4.497160082430691 3
+      vertex 6.569146823510458 4.899766125428393 3
+    endloop
+  endfacet
+  facet normal -0.34202014332567043 -0.9396926207859078 0
+    outer loop
+      vertex 3.1489453902537696 -4.497160082430691 0
+      vertex 3.430853176489542 -4.599766125428392 0
+      vertex 3.1489453902537696 -4.497160082430691 3
+    endloop
+  endfacet
+  facet normal -0.34202014332567043 -0.9396926207859078 0
+    outer loop
+      vertex 3.430853176489542 -4.599766125428392 0
+      vertex 3.430853176489542 -4.599766125428392 3
+      vertex 3.1489453902537696 -4.497160082430691 3
+    endloop
+  endfacet
+  facet normal 0.3420201433256709 0.9396926207859075 -0
+    outer loop
+      vertex 6.85105460974623 4.7971600824306915 0
+      vertex 6.569146823510458 4.899766125428393 0
+      vertex 6.85105460974623 4.7971600824306915 3
+    endloop
+  endfacet
+  facet normal 0.3420201433256709 0.9396926207859075 -0
+    outer loop
+      vertex 6.569146823510458 4.899766125428393 0
+      vertex 6.569146823510458 4.899766125428393 3
+      vertex 6.85105460974623 4.7971600824306915 3
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 3.1489453902537696 -4.497160082430691 0
+      vertex 6.569146823510458 4.899766125428393 0
+      vertex 3.430853176489542 -4.599766125428392 0
+    endloop
+  endfacet
+  facet normal 0 -0 -1
+    outer loop
+      vertex 6.569146823510458 4.899766125428393 0
+      vertex 6.85105460974623 4.7971600824306915 0
+      vertex 3.430853176489542 -4.599766125428392 0
+    endloop
+  endfacet
+  facet normal 0 -0 1
+    outer loop
+      vertex 3.430853176489542 -4.599766125428392 3
+      vertex 6.85105460974623 4.7971600824306915 3
+      vertex 3.1489453902537696 -4.497160082430691 3
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 6.85105460974623 4.7971600824306915 3
+      vertex 6.569146823510458 4.899766125428393 3
+      vertex 3.1489453902537696 -4.497160082430691 3
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 4.05 -0.95 0
+      vertex 4.05 1.05 0
+      vertex 4.05 -0.95 2.5
+    endloop
+  endfacet
+  facet normal 1 0 -0
+    outer loop
+      vertex 4.05 1.05 0
+      vertex 4.05 1.05 2.5
+      vertex 4.05 -0.95 2.5
+    endloop
+  endfacet
+  facet normal -1 0.0000000000000002220446049250313 0
+    outer loop
+      vertex 3.95 1.05 0
+      vertex 3.9499999999999997 -0.95 0
+      vertex 3.95 1.05 2.5
+    endloop
+  endfacet
+  facet normal -1 0.0000000000000002220446049250313 0
+    outer loop
+      vertex 3.9499999999999997 -0.95 0
+      vertex 3.9499999999999997 -0.95 2.5
+      vertex 3.95 1.05 2.5
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 3.9499999999999997 -0.95 0
+      vertex 4.05 -0.95 0
+      vertex 3.9499999999999997 -0.95 2.5
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 4.05 -0.95 0
+      vertex 4.05 -0.95 2.5
+      vertex 3.9499999999999997 -0.95 2.5
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex 4.05 1.05 0
+      vertex 3.95 1.05 0
+      vertex 4.05 1.05 2.5
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 3.95 1.05 0
+      vertex 3.95 1.05 2.5
+      vertex 4.05 1.05 2.5
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 3.9499999999999997 -0.95 0
+      vertex 3.95 1.05 0
+      vertex 4.05 -0.95 0
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 3.95 1.05 0
+      vertex 4.05 1.05 0
+      vertex 4.05 -0.95 0
+    endloop
+  endfacet
+  facet normal 0 -0 1
+    outer loop
+      vertex 4.05 -0.95 2.5
+      vertex 4.05 1.05 2.5
+      vertex 3.9499999999999997 -0.95 2.5
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 4.05 1.05 2.5
+      vertex 3.95 1.05 2.5
+      vertex 3.9499999999999997 -0.95 2.5
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 7 0 1
+      vertex 10 0 1
+      vertex 7 0 2.5
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 10 0 1
+      vertex 10 0 2.5
+      vertex 7 0 2.5
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex 10 0.1 1
+      vertex 7 0.1 1
+      vertex 10 0.1 2.5
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 7 0.1 1
+      vertex 7 0.1 2.5
+      vertex 10 0.1 2.5
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex 7 0.1 1
+      vertex 7 0 1
+      vertex 7 0.1 2.5
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex 7 0 1
+      vertex 7 0 2.5
+      vertex 7 0.1 2.5
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 10 0 1
+      vertex 10 0.1 1
+      vertex 10 0 2.5
+    endloop
+  endfacet
+  facet normal 1 0 -0
+    outer loop
+      vertex 10 0.1 1
+      vertex 10 0.1 2.5
+      vertex 10 0 2.5
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 7 0.1 1
+      vertex 10 0.1 1
+      vertex 7 0 1
+    endloop
+  endfacet
+  facet normal 0 -0 -1
+    outer loop
+      vertex 10 0.1 1
+      vertex 10 0 1
+      vertex 7 0 1
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 7 0 2.5
+      vertex 10 0 2.5
+      vertex 7 0.1 2.5
+    endloop
+  endfacet
+  facet normal 0 -0 1
+    outer loop
+      vertex 10 0 2.5
+      vertex 10 0.1 2.5
+      vertex 7 0.1 2.5
+    endloop
+  endfacet
 endsolid HarmonyArch

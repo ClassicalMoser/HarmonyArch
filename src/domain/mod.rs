@@ -71,6 +71,7 @@ pub struct Element {
     pub position: Point,
     pub dimensions: Vector,
     pub normal: Vector,
+    pub rotation_degrees: f64, // Rotation around Z-axis (0° = north, 90° = east, etc.)
     pub material: Option<String>,
     pub properties: std::collections::HashMap<String, String>,
 }
@@ -92,6 +93,12 @@ pub fn up_vector() -> Vector {
     vector(0.0, 0.0, 1.0)
 }
 
+// Orientation constants (degrees)
+pub const NORTH: f64 = 0.0;    // 0°
+pub const EAST: f64 = 90.0;    // 90°
+pub const SOUTH: f64 = 180.0;  // 180°
+pub const WEST: f64 = 270.0;   // 270°
+
 pub fn element(
     id: String,
     element_type: ElementType,
@@ -104,6 +111,7 @@ pub fn element(
         position,
         dimensions,
         normal: up_vector(), // Sensible default
+        rotation_degrees: NORTH, // Default facing north
         material: None,
         properties: std::collections::HashMap::new(),
     }
@@ -131,6 +139,13 @@ pub fn with_normal(normal: Vector) -> impl Fn(Element) -> Element {
     }
 }
 
+pub fn with_rotation(rotation_degrees: f64) -> impl Fn(Element) -> Element {
+    move |mut elem: Element| {
+        elem.rotation_degrees = rotation_degrees;
+        elem
+    }
+}
+
 pub fn with_material(material: String) -> impl Fn(Element) -> Element {
     let material_clone = material.clone();
     move |mut elem: Element| {
@@ -144,22 +159,31 @@ pub fn compose<A, B, C>(f: impl Fn(B) -> C, g: impl Fn(A) -> B) -> impl Fn(A) ->
     move |x| f(g(x))
 }
 
-// Factory functions for specific element types
-pub fn wall(id: String, position: Point, width: f64, height: f64) -> Element {
-    element(id, ElementType::Wall, position, vector(width, height, 0.3))
+// Factory functions for specific element types with rotation
+pub fn wall(id: String, position: Point, width: f64, height: f64, rotation_degrees: f64) -> Element {
+    element(id, ElementType::Wall, position, vector(width, 0.3, height))
+        .pipe(with_rotation(rotation_degrees))
 }
 
-pub fn door(id: String, position: Point, width: f64, height: f64) -> Element {
-    element(id, ElementType::Door, position, vector(width, height, 0.1))
+pub fn door(id: String, position: Point, width: f64, height: f64, rotation_degrees: f64) -> Element {
+    element(id, ElementType::Door, position, vector(width, 0.1, height))
+        .pipe(with_rotation(rotation_degrees))
 }
 
-pub fn window(id: String, position: Point, width: f64, height: f64) -> Element {
-    element(
-        id,
-        ElementType::Window,
-        position,
-        vector(width, height, 0.1),
-    )
+pub fn window(id: String, position: Point, width: f64, height: f64, rotation_degrees: f64) -> Element {
+    element(id, ElementType::Window, position, vector(width, 0.1, height))
+        .pipe(with_rotation(rotation_degrees))
+}
+
+// Helper trait for functional composition
+trait Pipe {
+    fn pipe<F>(self, f: F) -> Element where F: Fn(Element) -> Element;
+}
+
+impl Pipe for Element {
+    fn pipe<F>(self, f: F) -> Element where F: Fn(Element) -> Element {
+        f(self)
+    }
 }
 
 // Function that transforms elements (like map in FP)
