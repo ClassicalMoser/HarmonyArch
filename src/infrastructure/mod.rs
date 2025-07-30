@@ -1,6 +1,5 @@
 //! Infrastructure layer - External concerns like file I/O and rendering
 
-use crate::application::GeometryService;
 use crate::domain::Element;
 use std::io::{Result, Write};
 
@@ -63,13 +62,13 @@ impl StlRenderer {
                 r#"  <text x="10" y="{}" font-family="Arial" font-size="12">"#,
                 50 + i * 20
             )?;
-            writeln!(
-                file,
-                r#"    {}: {} at {}"#,
-                element.id,
-                format!("{:?}", element.element_type),
-                element.position
-            )?;
+                            writeln!(
+                    file,
+                    r#"    {}: {:?} at {}"#,
+                    element.id,
+                    element.element_type,
+                    element.position
+                )?;
             writeln!(file, r#"  </text>"#)?;
         }
 
