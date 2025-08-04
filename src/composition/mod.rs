@@ -43,4 +43,9 @@ impl CompositionRoot {
     pub fn export_to_stl(elements: &[Element], filename: &str) -> std::io::Result<()> {
         StlRenderer::write_stl(elements, filename)
     }
+
+    /// Export scene to SVG file
+    pub fn export_to_svg(elements: &[Element], filename: &str) -> std::io::Result<()> {
+        StlRenderer::write_svg(elements, filename)
+    }
 }

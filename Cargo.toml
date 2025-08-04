@@ -9,6 +9,8 @@ repository = "https://github.com/classicalmoser/HarmonyArch"
 
 [dependencies]
 nalgebra = "0.32"  # 3D math library - vectors, matrices, transformations
+winit = "0.30.12"
+eframe = "0.26"  # Simple GUI framework
 
 [dev-dependencies]
 tempfile = "3.0"
