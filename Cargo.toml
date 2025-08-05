@@ -10,7 +10,12 @@ repository = "https://github.com/classicalmoser/HarmonyArch"
 [dependencies]
 nalgebra = "0.32"  # 3D math library - vectors, matrices, transformations
 winit = "0.30.12"
-eframe = "0.26"  # Simple GUI framework
+eframe = "0.26"  # GUI framework
+wgpu = "0.19"    # Modern graphics API
+pollster = "0.3"  # Async runtime for WGPU
+bytemuck = "1.14" # Safe transmute for GPU buffers
+tokio = { version = "1.0", features = ["full"] }  # Async runtime
+kiss3d = "0.35"  # Simple 3D graphics library
 
 [dev-dependencies]
 tempfile = "3.0"

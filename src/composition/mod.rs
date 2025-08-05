@@ -1,7 +1,7 @@
 //! Composition layer - Dependency injection and application setup
 
 use crate::domain::{Element, wall, door, window, point, origin, NORTH, EAST};
-use crate::infrastructure::StlRenderer;
+use crate::infrastructure::{StlRenderer, SvgRenderer};
 
 /// Application composition root
 pub struct CompositionRoot;
@@ -46,6 +46,6 @@ impl CompositionRoot {
 
     /// Export scene to SVG file
     pub fn export_to_svg(elements: &[Element], filename: &str) -> std::io::Result<()> {
-        StlRenderer::write_svg(elements, filename)
+        SvgRenderer::write_svg(elements, filename)
     }
 }
