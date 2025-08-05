@@ -1,4 +1,4 @@
-//! HarmonyArch - Semantic architectural modeling engine
+//! `HarmonyArch` - Semantic architectural modeling engine
 //!
 //! A domain-driven design for architectural modeling with hexagonal architecture.
 //! 
@@ -19,5 +19,4 @@ pub mod interface;
 // Re-export commonly used domain types
 pub use application::GeometryService;
 pub use domain::{Element, ElementType, Point};
-pub use infrastructure::{StlRenderer, WgpuRenderer};
-pub use interface::SimpleWgpuViewer;
+pub use infrastructure::StlRenderer;

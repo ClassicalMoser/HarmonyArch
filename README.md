@@ -49,53 +49,10 @@ harmonyarch/
 │   ├── interface/        # CLI interface (TUI coming soon)
 │   ├── infrastructure/   # Geometry adapters (e.g., CadQuery, SVG writer)
 │   └── composition/      # Entry point & DI bootstrap
-├── examples/             # JSON pattern inputs & config demos
 ├── tests/                # Unit + integration tests (100% coverage target)
 ├── Cargo.toml
 └── README.md
 ```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-* [Rust](https://rustup.rs/) (`cargo` via `rustup`)
-* Optional:
-
-  * [Inkscape](https://inkscape.org/) for SVG output
-  * [MeshLab](https://www.meshlab.net/) for STL/OBJ viewing
-
-### Clone and Run
-
-```bash
-git clone https://github.com/yourname/harmonyarch.git
-cd harmonyarch
-cargo run -- --input examples/chapel.json --output out/chapel.svg
-```
-
----
-
-## 🛠 Development Status
-
-* [x] Domain layer bootstrapped (Scene → Tier → Element)
-* [ ] Initial GeometrySolver implementation (SVG + STL)
-* [ ] Rust test harness + mutation testing setup
-* [ ] CLI scaffolding for basic input/output
-* [ ] Constraint handling and bottom-up allowances
-* [ ] Tier pattern defaults and overridable constraints
-
----
-
-## 🧩 Planned Adapters
-
-| Target     | Status | Description                                    |
-| ---------- | ------ | ---------------------------------------------- |
-| CadQuery   | 🔜     | Python-based 3D modeling from parametric input |
-| SVG Writer | ✅      | 2D projection for plan/elevation output        |
-| Unity      | 🔜     | Visual frontend via geometry loading           |
-| Web Viewer | 🧪     | React or Godot WASM experiment (eventually)    |
 
 ---
 

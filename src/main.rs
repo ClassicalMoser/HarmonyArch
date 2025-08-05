@@ -2,12 +2,10 @@
 
 use harmony_arch::composition::CompositionRoot;
 use harmony_arch::domain::Element;
-use harmony_arch::interface::SimpleWgpuViewer;
 use eframe::egui;
 
 struct HarmonyArchApp {
-    elements: Vec<Element>,
-    wgpu_viewer: SimpleWgpuViewer,
+    elements: Vec<Element>
 }
 
 impl Default for HarmonyArchApp {
@@ -22,12 +20,8 @@ impl Default for HarmonyArchApp {
 
         println!("Created {} elements", elements.len());
         
-        let mut wgpu_viewer = SimpleWgpuViewer::new();
-        wgpu_viewer.update_elements(elements.clone());
-        
         Self { 
             elements,
-            wgpu_viewer,
         }
     }
 }
@@ -36,11 +30,6 @@ impl eframe::App for HarmonyArchApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("HarmonyArch - Architectural Viewer");
-            
-            ui.separator();
-            
-            // 3D WGPU Viewer
-            self.wgpu_viewer.render(ui);
             
             ui.separator();
             
