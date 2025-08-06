@@ -3296,6 +3296,7 @@ dependencies = [
  "nalgebra",
  "tempfile",
  "tokio",
+ "uuid",
  "winit 0.30.12",
 ]
 
