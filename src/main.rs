@@ -1,93 +1,40 @@
-//! HarmonyArch - Main application entry point
+use harmony_arch::application::new_model;
+use harmony_arch::domain::{Element, Point};
+use bevy::prelude::*;
 
-use harmony_arch::composition::CompositionRoot;
-use harmony_arch::domain::Element;
-use eframe::egui;
 
-struct HarmonyArchApp {
-    elements: Vec<Element>
-}
-
-impl Default for HarmonyArchApp {
-    fn default() -> Self {
-        let elements = CompositionRoot::create_sample_scene();
-        
-        // Export to STL file
-        match CompositionRoot::export_to_stl(&elements, "output.stl") {
-            Ok(_) => println!("STL file written successfully to output.stl"),
-            Err(e) => println!("Error writing STL file: {e}"),
-        }
-
-        println!("Created {} elements", elements.len());
-        
-        Self { 
-            elements,
-        }
-    }
-}
-
-impl eframe::App for HarmonyArchApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("HarmonyArch - Architectural Viewer");
-            
-            ui.separator();
-            
-            // Display scene information
-            ui.label(format!("Scene contains {} elements", self.elements.len()));
-            
-            ui.separator();
-            
-            // Display each element
-            for element in &self.elements {
-                ui.group(|ui| {
-                    ui.label(format!("Element: {}", element.id));
-                    ui.label(format!("Type: {:?}", element.element_type));
-                    ui.label(format!("Position: {}", element.position));
-                    ui.label(format!("Dimensions: ({:.1}, {:.1}, {:.1})", 
-                        element.dimensions.x, element.dimensions.y, element.dimensions.z));
-                    ui.label(format!("Rotation: {:.1}°", element.rotation_degrees));
-                });
-            }
-            
-            ui.separator();
-            
-            // Add some controls
-            if ui.button("Export STL").clicked() {
-                match CompositionRoot::export_to_stl(&self.elements, "output.stl") {
-                    Ok(_) => {
-                        ui.label("STL exported successfully!");
-                    },
-                    Err(e) => {
-                        ui.label(format!("Export failed: {e}"));
-                    },
-                }
-            }
-            
-            if ui.button("Export SVG").clicked() {
-                match CompositionRoot::export_to_svg(&self.elements, "output.svg") {
-                    Ok(_) => {
-                        ui.label("SVG exported successfully!");
-                    },
-                    Err(e) => {
-                        ui.label(format!("Export failed: {e}"));
-                    },
-                }
-            }
-        });
-    }
-}
-
-fn main() -> Result<(), eframe::Error> {
-    let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([800.0, 600.0]),
-        ..Default::default()
+fn main() {
+    println!("HarmonyArch - Semantic Architectural Modeling Engine");
+    println!("==================================================");
+    
+    // Create a new model using the application layer
+    let model = new_model();
+    
+    println!("Created model: {} (ID: {})", model.name, model.id);
+    println!("Model has {} elements", model.elements.len());
+    
+    // Demonstrate creating some elements
+    let element1 = Element {
+        id: "elem1".to_string(),
+        name: "Wall".to_string(),
+        position: Point { x: 0.0, y: 0.0, z: 0.0 },
     };
     
-    eframe::run_native(
-        "HarmonyArch",
-        options,
-        Box::new(|_cc| Box::new(HarmonyArchApp::default())),
-    )
+    let element2 = Element {
+        id: "elem2".to_string(),
+        name: "Window".to_string(),
+        position: Point { x: 5.0, y: 0.0, z: 0.0 },
+    };
+    
+    println!("\nExample elements:");
+    println!("- {} at position ({}, {}, {})", 
+             element1.name, element1.position.x, element1.position.y, element1.position.z);
+    println!("- {} at position ({}, {}, {})", 
+             element2.name, element2.position.x, element2.position.y, element2.position.z);
+    
+    println!("\nHarmonyArch is ready for architectural modeling!");
+
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .run();
 }
