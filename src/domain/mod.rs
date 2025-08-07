@@ -1,7 +1,7 @@
+use std::collections::HashMap;
 /// Domain layer for the application
 /// Pure domain logic, no external dependencies, no ECS, no Bevy
 use uuid::Uuid;
-use std::collections::HashMap;
 
 /// meters per unit
 pub const METERS_PER_UNIT: f32 = 1.0;
@@ -14,7 +14,6 @@ pub fn create_origin() -> Point {
         z: 0.0,
     }
 }
-
 
 /// A position point in meters 3D space.
 /// Points are less precise than distances.
@@ -41,14 +40,12 @@ impl Point {
     }
 
     /// Move a point to a defined position
-    pub fn move_to_position(&mut self, position: &Point)  -> () {
+    pub fn move_to_position(&mut self, position: &Point) -> () {
         self.x = position.x as f32;
         self.y = position.y as f32;
         self.z = position.z as f32;
     }
 }
-
-
 
 /// A vertex in 3D space
 pub struct Vertex {
@@ -113,7 +110,6 @@ pub fn new_segment(start_vertex: &Vertex, end_vertex: &Vertex) -> Segment {
         end_vertex: end_vertex.id,
     }
 }
-
 
 /// A polygon in 3D space
 pub struct Polygon {
