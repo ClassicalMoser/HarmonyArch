@@ -1,8 +1,7 @@
 /// Application layer for the application
 
-use crate::domain::{Point, Segment, Polygon, Solid, PointRegistry};
+use crate::domain::{Vertex, Point, Segment, Polygon, Solid};
 use uuid::Uuid;
-use std::collections::HashMap;
 
 /// Create a new solid
 pub fn new_solid() -> Solid {
@@ -16,49 +15,42 @@ pub fn new_solid() -> Solid {
 
 /// Setup world with a cube
 /// Returns (registry, segments, polygons, solid)
-pub fn create_cube() -> (PointRegistry, Vec<Segment>, Vec<Polygon>, Solid) {
+pub fn create_cube() -> ([Vertex; 8], [Segment; 12], [Polygon; 6], Solid) {
     // Create 8 vertices for a unit cube centered at origin
     let vertices = [
         // Bottom face (z = -0.5)
-        Point { id: Uuid::new_v4(), x: -0.5, y: -0.5, z: -0.5 }, // 0: back-left-bottom
-        Point { id: Uuid::new_v4(), x:  0.5, y: -0.5, z: -0.5 }, // 1: back-right-bottom
-        Point { id: Uuid::new_v4(), x:  0.5, y:  0.5, z: -0.5 }, // 2: front-right-bottom
-        Point { id: Uuid::new_v4(), x: -0.5, y:  0.5, z: -0.5 }, // 3: front-left-bottom
+        Vertex { id: Uuid::new_v4(), position: Point { x: -0.5, y: -0.5, z: -0.5 } }, // 0: back-left-bottom
+        Vertex { id: Uuid::new_v4(), position: Point { x:  0.5, y: -0.5, z: -0.5 } }, // 1: back-right-bottom
+        Vertex { id: Uuid::new_v4(), position: Point { x:  0.5, y:  0.5, z: -0.5 } }, // 2: front-right-bottom
+        Vertex { id: Uuid::new_v4(), position: Point { x: -0.5, y:  0.5, z: -0.5 } }, // 3: front-left-bottom
         // Top face (z = 0.5)
-        Point { id: Uuid::new_v4(), x: -0.5, y: -0.5, z:  0.5 }, // 4: back-left-top
-        Point { id: Uuid::new_v4(), x:  0.5, y: -0.5, z:  0.5 }, // 5: back-right-top
-        Point { id: Uuid::new_v4(), x:  0.5, y:  0.5, z:  0.5 }, // 6: front-right-top
-        Point { id: Uuid::new_v4(), x: -0.5, y:  0.5, z:  0.5 }, // 7: front-left-top
+        Vertex { id: Uuid::new_v4(), position: Point { x: -0.5, y: -0.5, z:  0.5 } }, // 4: back-left-top
+        Vertex { id: Uuid::new_v4(), position: Point { x:  0.5, y: -0.5, z:  0.5 } }, // 5: back-right-top
+        Vertex { id: Uuid::new_v4(), position: Point { x:  0.5, y:  0.5, z:  0.5 } }, // 6: front-right-top
+        Vertex { id: Uuid::new_v4(), position: Point { x: -0.5, y:  0.5, z:  0.5 } }, // 7: front-left-top
     ];
 
-    // Build point registry
-    let mut point_map = HashMap::new();
-    for vertex in &vertices {
-        point_map.insert(vertex.id, vertex.clone());
-    }
-    let registry = PointRegistry { points: point_map };
-
     // Create 12 edges for the cube
-    let segments = vec![
+    let segments = [    
         // Bottom face edges
-        Segment { id: Uuid::new_v4(), start_point: vertices[0].id, end_point: vertices[1].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[1].id, end_point: vertices[2].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[2].id, end_point: vertices[3].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[3].id, end_point: vertices[0].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[0].id, end_vertex: vertices[1].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[1].id, end_vertex: vertices[2].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[2].id, end_vertex: vertices[3].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[3].id, end_vertex: vertices[0].id },
         // Top face edges
-        Segment { id: Uuid::new_v4(), start_point: vertices[4].id, end_point: vertices[5].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[5].id, end_point: vertices[6].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[6].id, end_point: vertices[7].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[7].id, end_point: vertices[4].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[4].id, end_vertex: vertices[5].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[5].id, end_vertex: vertices[6].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[6].id, end_vertex: vertices[7].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[7].id, end_vertex: vertices[4].id },
         // Vertical edges
-        Segment { id: Uuid::new_v4(), start_point: vertices[0].id, end_point: vertices[4].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[1].id, end_point: vertices[5].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[2].id, end_point: vertices[6].id },
-        Segment { id: Uuid::new_v4(), start_point: vertices[3].id, end_point: vertices[7].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[0].id, end_vertex: vertices[4].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[1].id, end_vertex: vertices[5].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[2].id, end_vertex: vertices[6].id },
+        Segment { id: Uuid::new_v4(), start_vertex: vertices[3].id, end_vertex: vertices[7].id },
     ];
 
     // Create 6 faces for the cube
-    let polygons = vec![
+    let polygons = [
         // Bottom face (z = -0.5)
         Polygon { id: Uuid::new_v4(), segments: vec![segments[0].id, segments[1].id, segments[2].id, segments[3].id] },
         // Top face (z = 0.5)  
@@ -79,5 +71,5 @@ pub fn create_cube() -> (PointRegistry, Vec<Segment>, Vec<Polygon>, Solid) {
         polygons: polygons.iter().map(|p| p.id).collect(),
     };
 
-    (registry, segments, polygons, solid)
+    (vertices, segments, polygons, solid)
 }

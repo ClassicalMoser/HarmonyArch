@@ -1,5 +1,5 @@
-use harmony_arch::interface::InterfacePlugin;
 use bevy::prelude::*;
+use harmony_arch::interface::InterfacePlugin;
 
 fn main() {
     App::new()
