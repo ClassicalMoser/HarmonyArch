@@ -1,13 +1,26 @@
 use bevy::prelude::*;
 
 pub fn spawn_lights(commands: &mut Commands) {
+    // Directional light without shadows to eliminate artifacts
+    commands.spawn((
+        DirectionalLight {
+            shadows_enabled: true,
+            illuminance: 400.0,
+            shadow_depth_bias: 10.0,
+            shadow_normal_bias: 10.0,
+            ..default()
+        },
+        Transform::from_xyz(5.0, 2.0, 3.0).looking_at(Vec3::ZERO, Vec3::Y),
+        GlobalTransform::default(),
+    ));
+
     commands.spawn((
         PointLight {
             shadows_enabled: true,
-            intensity: 1.0,
+            intensity: 4000.0,
             ..default()
         },
-        Transform::from_xyz(-2.0, 2.0, -2.0).looking_at(Vec3::ZERO, Vec3::Y),
+        Transform::from_xyz(-2.0, -1.0, -4.0).looking_at(Vec3::ZERO, Vec3::Y),
         GlobalTransform::default(),
     ));
 
