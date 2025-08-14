@@ -1,9 +1,20 @@
-use crate::application::create_cube;
 /// Composition layer for the application
-use crate::domain::{Polygon, Segment, Solid, Vertex};
+use crate::application::cube::create_cube;
+use crate::domain::*;
+use uuid::Uuid;
 
 /// Create a sample scene with a cube
-pub fn create_sample_scene() -> ([Vertex; 8], [Segment; 12], [Polygon; 6], Solid) {
-    // Create a complete cube with all geometric relationships
-    create_cube()
+pub fn create_sample_scene(
+    vertex_registry: &mut VertexRegistry,
+    segment_registry: &mut SegmentRegistry,
+    polygon_registry: &mut PolygonRegistry,
+    solid_registry: &mut SolidRegistry,
+) -> Uuid {
+    let solid_id = create_cube(
+        vertex_registry,
+        segment_registry,
+        polygon_registry,
+        solid_registry,
+    );
+    solid_id
 }

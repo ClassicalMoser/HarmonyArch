@@ -17,7 +17,7 @@ impl Default for CameraConfig {
             look_at_target: Vec3::ZERO,
             up_direction: Vec3::Y,
             movement_speed: 2.0,
-            rotation_speed: 1.0,
+            rotation_speed: 3.0,
         }
     }
 }

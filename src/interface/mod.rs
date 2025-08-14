@@ -3,7 +3,9 @@
 use bevy::pbr::*;
 use bevy::prelude::*;
 
-use crate::application::create_cube;
+use crate::application::create_mesh_from_solid;
+use crate::application::cube::create_cube;
+use crate::domain::{PolygonRegistry, SegmentRegistry, SolidRegistry, VertexRegistry};
 
 mod camera;
 mod lighting;
@@ -11,7 +13,7 @@ mod mesh_creation;
 
 use camera::{camera_controls, spawn_camera, CameraConfig};
 use lighting::{spawn_directional_light, LightingConfig};
-use mesh_creation::{create_cube_mesh, MeshConfig};
+use mesh_creation::MeshConfig;
 
 /// A plugin for the interface
 pub struct InterfacePlugin;
@@ -35,63 +37,57 @@ fn setup_world(
     lighting_config: Res<LightingConfig>,
     mesh_config: Res<MeshConfig>,
 ) {
-    // Create our semantic cube
-    let (vertices, segments, polygons, solid) = create_cube();
+    // Create domain registries
+    let mut vertex_registry = VertexRegistry::default();
+    let mut segment_registry = SegmentRegistry::default();
+    let mut polygon_registry = PolygonRegistry::default();
+    let mut solid_registry = SolidRegistry::default();
 
-    // Log the creation
-    println!("Created cube with:");
-    println!("  {} segments", segments.len());
-    println!("  {} polygons", polygons.len());
-    println!("  1 solid with {} polygon references", solid.polygons.len());
+    // Create domain objects for the cube
+    let solid_id = create_cube(
+        &mut vertex_registry,
+        &mut segment_registry,
+        &mut polygon_registry,
+        &mut solid_registry,
+    );
 
-    // Spawn camera and lighting using our modular components
-    spawn_camera(&mut commands, &camera_config);
-    spawn_directional_light(&mut commands, &lighting_config);
+    // Get a reference to the solid in the registry
+    let solid = solid_registry
+        .get(&solid_id)
+        .expect("Solid was just inserted");
 
-    // Create the cube mesh from our semantic data
-    let cube_mesh = create_cube_mesh(&vertices, &segments, &polygons);
+    // Generate mesh from domain objects
+    let mesh = create_mesh_from_solid(
+        &solid,
+        &polygon_registry,
+        &segment_registry,
+        &vertex_registry,
+    );
+    let mesh_handle = meshes.add(mesh);
 
-    // Spawn the cube entity using the correct component types for Bevy 0.16
-    let mesh_handle = meshes.add(cube_mesh);
-
-    // BEVY MATERIAL OPTIONS TO FIX RENDERING ISSUES:
-    let material_handle = materials.add(StandardMaterial {
+    // Create material
+    let material = StandardMaterial {
         base_color: mesh_config.material_color,
         perceptual_roughness: mesh_config.material_roughness,
         metallic: mesh_config.material_metallic,
-
-        // Use default settings for now - Bevy handles most issues automatically
-        ..default()
-    });
-
-    #[derive(Bundle)]
-    struct Cube {
-        mesh: Mesh3d,
-        material: MeshMaterial3d<StandardMaterial>,
-    }
-
-    let cube = Cube {
-        mesh: Mesh3d(mesh_handle),
-        material: MeshMaterial3d(material_handle),
+        ..Default::default()
     };
+    let material_handle = materials.add(material);
 
     // Spawn the cube entity
-    commands.spawn(cube);
+    commands.spawn((
+        Mesh3d(mesh_handle),
+        MeshMaterial3d(material_handle),
+        Transform::from_xyz(0.0, 0.0, 0.0),
+    ));
 
-    // Add instructions for testing
-    println!();
-    println!("=== CUBE RENDERING OPTIONS ===");
-    println!("To test Bevy's built-in cube (fixes all issues automatically):");
-    println!("  Set MeshConfig::use_builtin_cube = true");
-    println!();
-    println!("Current material settings:");
-    println!("  - double_sided: true (renders both sides)");
-    println!("  - cull_mode: None (no face culling)");
-    println!("  - depth_write: true (proper depth handling)");
-    println!("  - alpha_mode: Opaque (no transparency issues)");
-    println!();
-    println!("Camera controls:");
-    println!("  WASD: Move camera");
-    println!("  QE: Move up/down");
-    println!("  Arrow keys: Rotate around cube");
+    // Spawn camera and lighting
+    spawn_camera(&mut commands, &camera_config);
+    spawn_directional_light(&mut commands, &lighting_config);
+
+    println!("Created cube from domain objects:");
+    println!("  Solid ID: {}", solid.id);
+    println!("  Polygons: {}", solid.polygons.len());
+    println!("  Segments: {}", segment_registry.segments.len());
+    println!("  Vertices: {}", vertex_registry.vertices.len());
 }
