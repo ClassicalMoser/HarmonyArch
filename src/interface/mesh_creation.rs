@@ -12,7 +12,7 @@ impl Default for MeshConfig {
     fn default() -> Self {
         Self {
             material_color: Color::srgb(0.9, 0.9, 0.9),
-            material_roughness: 0.5,
+            material_roughness: 0.5, // Bevy's default - good balance
             material_metallic: 0.0,
         }
     }

@@ -10,45 +10,46 @@ pub fn create_cube(
     solid_registry: &mut SolidRegistry,
 ) -> Uuid {
     // Phase 1: Create all vertices using registry methods
+    // Coordinate system: X = left(-) to right(+), Y = bottom(-) to top(+), Z = back(-) to front(+)
     let bottom_back_left_id = vertex_registry.create_and_store(Point {
-        x: -0.5,
-        y: -0.5,
-        z: -0.5,
+        x: -0.5, // Left
+        y: -0.5, // Bottom
+        z: -0.5, // Back
     });
     let bottom_back_right_id = vertex_registry.create_and_store(Point {
-        x: 0.5,
-        y: -0.5,
-        z: -0.5,
+        x: 0.5,  // Right
+        y: -0.5, // Bottom
+        z: -0.5, // Back
     });
     let bottom_front_right_id = vertex_registry.create_and_store(Point {
-        x: 0.5,
-        y: 0.5,
-        z: -0.5,
+        x: 0.5,  // Right
+        y: -0.5, // Bottom
+        z: 0.5,  // Front
     });
     let bottom_front_left_id = vertex_registry.create_and_store(Point {
-        x: -0.5,
-        y: 0.5,
-        z: -0.5,
+        x: -0.5, // Left
+        y: -0.5, // Bottom
+        z: 0.5,  // Front
     });
     let top_back_left_id = vertex_registry.create_and_store(Point {
-        x: -0.5,
-        y: -0.5,
-        z: 0.5,
+        x: -0.5, // Left
+        y: 0.5,  // Top
+        z: -0.5, // Back
     });
     let top_back_right_id = vertex_registry.create_and_store(Point {
-        x: 0.5,
-        y: -0.5,
-        z: 0.5,
+        x: 0.5,  // Right
+        y: 0.5,  // Top
+        z: -0.5, // Back
     });
     let top_front_right_id = vertex_registry.create_and_store(Point {
-        x: 0.5,
-        y: 0.5,
-        z: 0.5,
+        x: 0.5, // Right
+        y: 0.5, // Top
+        z: 0.5, // Front
     });
     let top_front_left_id = vertex_registry.create_and_store(Point {
-        x: -0.5,
-        y: 0.5,
-        z: 0.5,
+        x: -0.5, // Left
+        y: 0.5,  // Top
+        z: 0.5,  // Front
     });
 
     // Phase 2: Get references to the vertices in the registry
@@ -80,7 +81,7 @@ pub fn create_cube(
     // Phase 3: Create all segments using registry methods
     let bottom_left_id = segment_registry.create_and_store(bottom_back_left, bottom_front_left);
     let bottom_back_id = segment_registry.create_and_store(bottom_back_right, bottom_back_left);
-    let bottom_right_id = segment_registry.create_and_store(bottom_front_right, bottom_front_left);
+    let bottom_right_id = segment_registry.create_and_store(bottom_front_right, bottom_back_right);
     let bottom_front_id = segment_registry.create_and_store(bottom_front_left, bottom_front_right);
 
     let top_left_id = segment_registry.create_and_store(top_back_left, top_front_left);

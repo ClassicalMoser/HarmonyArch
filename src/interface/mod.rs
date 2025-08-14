@@ -12,7 +12,7 @@ mod lighting;
 mod mesh_creation;
 
 use camera::{camera_controls, spawn_camera, CameraConfig};
-use lighting::{spawn_directional_light, LightingConfig};
+use lighting::spawn_lights;
 use mesh_creation::MeshConfig;
 
 /// A plugin for the interface
@@ -21,7 +21,6 @@ pub struct InterfacePlugin;
 impl Plugin for InterfacePlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(CameraConfig::default())
-            .insert_resource(LightingConfig::default())
             .insert_resource(MeshConfig::default())
             .add_systems(Startup, setup_world)
             .add_systems(Update, camera_controls);
@@ -34,7 +33,6 @@ fn setup_world(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     camera_config: Res<CameraConfig>,
-    lighting_config: Res<LightingConfig>,
     mesh_config: Res<MeshConfig>,
 ) {
     // Create domain registries
@@ -82,8 +80,8 @@ fn setup_world(
     ));
 
     // Spawn camera and lighting
+    spawn_lights(&mut commands);
     spawn_camera(&mut commands, &camera_config);
-    spawn_directional_light(&mut commands, &lighting_config);
 
     println!("Created cube from domain objects:");
     println!("  Solid ID: {}", solid.id);
