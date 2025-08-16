@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::vertex::Vertex;
+use crate::domain::validate_distinct_ids;
 
 /// A segment in 3D space
 pub struct Segment {
@@ -15,13 +15,21 @@ pub struct Segment {
 }
 
 /// Create a new segment
-pub fn new_segment(start_vertex: &Vertex, end_vertex: &Vertex) -> Segment {
+pub fn new_segment(start_vertex: &Uuid, end_vertex: &Uuid) -> Option<Segment> {
+    // Validate that the start and end vertices are distinct
+    let vertices = vec![start_vertex, end_vertex];
+    let is_valid = validate_distinct_ids(&vertices);
+    if !is_valid {
+        return None;
+    }
+
+    // Create the new segment
     let new_segment = Segment {
         id: Uuid::new_v4(),
-        start_vertex: start_vertex.id,
-        end_vertex: end_vertex.id,
+        start_vertex: start_vertex.clone(),
+        end_vertex: end_vertex.clone(),
     };
-    new_segment
+    Some(new_segment)
 }
 
 /// A registry of segments
@@ -41,16 +49,22 @@ impl Default for SegmentRegistry {
 impl SegmentRegistry {
     /// Declare, store, and return the ID of a segment
     /// This method handles all three operations in one call
-    pub fn create_and_store(&mut self, start_vertex: &Vertex, end_vertex: &Vertex) -> Uuid {
+    pub fn create_and_store(&mut self, start_vertex: &Uuid, end_vertex: &Uuid) -> Option<Uuid> {
         // 1. Declare the segment
         let segment = new_segment(start_vertex, end_vertex);
+
+        if segment.is_none() {
+            return None;
+        }
+
+        let segment = segment.expect("None failed to return in segment storage");
 
         // 2. Store it in the registry (self is already mutably borrowed)
         let id = segment.id.clone();
         self.segments.insert(id, segment);
 
         // 3. Return the ID of the stored segment
-        id
+        Some(id)
     }
 
     /// Remove a segment from the registry

@@ -1,5 +1,5 @@
 /// Composition layer for the application
-use crate::application::cube::create_cube;
+use crate::application::create_cube_solid;
 use crate::domain::*;
 use uuid::Uuid;
 
@@ -10,11 +10,12 @@ pub fn create_sample_scene(
     polygon_registry: &mut PolygonRegistry,
     solid_registry: &mut SolidRegistry,
 ) -> Uuid {
-    let solid_id = create_cube(
+    let solid_id = create_cube_solid(
+        1.0,
         vertex_registry,
         segment_registry,
         polygon_registry,
         solid_registry,
     );
-    solid_id
+    solid_id.expect("Failed to create cube for sample scene")
 }

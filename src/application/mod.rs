@@ -437,6 +437,7 @@ pub fn new_solid() -> Solid {
     };
     solid
 }
-
 /// Cube creation utilities for the application layer
-pub mod cube;
+pub mod cuboid;
+
+pub use cuboid::*;

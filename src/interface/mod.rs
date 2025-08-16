@@ -3,8 +3,7 @@
 use bevy::pbr::*;
 use bevy::prelude::*;
 
-use crate::application::create_mesh_from_solid;
-use crate::application::cube::create_cube;
+use crate::application::{create_mesh_from_solid, create_rectangular_solid};
 use crate::domain::{PolygonRegistry, SegmentRegistry, SolidRegistry, VertexRegistry};
 
 mod camera;
@@ -42,17 +41,21 @@ fn setup_world(
     let mut solid_registry = SolidRegistry::default();
 
     // Create domain objects for the cube
-    let solid_id = create_cube(
+    let solid_id = create_rectangular_solid(
+        2.0,
+        2.5,
+        3.5,
         &mut vertex_registry,
         &mut segment_registry,
         &mut polygon_registry,
         &mut solid_registry,
-    );
+    )
+    .expect("Failed to create cube for setup world");
 
     // Get a reference to the solid in the registry
     let solid = solid_registry
         .get(&solid_id)
-        .expect("Solid was just inserted");
+        .expect("Failed to get solid from registry");
 
     // Generate mesh from domain objects
     let mesh = create_mesh_from_solid(

@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::segment::Segment;
+use crate::domain::validate_distinct_ids;
 
 /// A polygon in 3D space
 pub struct Polygon {
@@ -13,13 +13,24 @@ pub struct Polygon {
 }
 
 /// Create a new polygon
-pub fn new_polygon(segments: Vec<&Segment>) -> Polygon {
-    let segment_ids: Vec<Uuid> = segments.iter().map(|s| s.id.clone()).collect();
+pub fn new_polygon(segment_ids: Vec<&Uuid>) -> Option<Polygon> {
+    // Validate the segment IDs
+    if !validate_distinct_ids(&segment_ids) {
+        return None;
+    }
+
+    // TODO: Validate that the segments are coplanar
+
+    // Copy the segment IDs to owned UUIDs
+    let segments: Vec<Uuid> = segment_ids.iter().map(|id| **id).collect();
+
+    // Create polygon with owned UUIDs
     let new_polygon = Polygon {
         id: Uuid::new_v4(),
-        segments: segment_ids,
+        segments,
     };
-    new_polygon
+
+    Some(new_polygon)
 }
 
 /// A registry of polygons
@@ -39,16 +50,22 @@ impl Default for PolygonRegistry {
 impl PolygonRegistry {
     /// Declare, store, and return the ID of a polygon
     /// This method handles all three operations in one call
-    pub fn create_and_store(&mut self, segments: Vec<&Segment>) -> Uuid {
+    pub fn create_and_store(&mut self, segment_ids: Vec<&Uuid>) -> Option<Uuid> {
         // 1. Declare the polygon
-        let polygon = new_polygon(segments);
+        let polygon = new_polygon(segment_ids);
+
+        if polygon.is_none() {
+            return None;
+        }
+
+        let polygon = polygon.expect("None failed to return in polygon storage");
 
         // 2. Store it in the registry (self is already mutably borrowed)
         let id = polygon.id.clone();
         self.polygons.insert(id, polygon);
 
         // 3. Return the ID of the stored polygon
-        id
+        Some(id)
     }
 
     /// Remove a polygon from the registry

@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::polygon::Polygon;
+use crate::domain::validate_distinct_ids;
 
 /// A solid in 3D space
 pub struct Solid {
@@ -13,13 +13,17 @@ pub struct Solid {
 }
 
 /// Create a new solid
-pub fn new_solid(polygons: Vec<&Polygon>) -> Solid {
-    let polygon_ids: Vec<Uuid> = polygons.iter().map(|p| p.id.clone()).collect();
+pub fn new_solid(polygon_ids: Vec<&Uuid>) -> Option<Solid> {
+    if !validate_distinct_ids(&polygon_ids) {
+        return None;
+    }
+    // copy the polygon IDs to owned UUIDs
+    let polygons: Vec<Uuid> = polygon_ids.iter().map(|p| **p).collect();
     let new_solid = Solid {
         id: Uuid::new_v4(),
-        polygons: polygon_ids,
+        polygons,
     };
-    new_solid
+    Some(new_solid)
 }
 
 /// A registry of solids
@@ -39,16 +43,22 @@ impl Default for SolidRegistry {
 impl SolidRegistry {
     /// Declare, store, and return the ID of a solid
     /// This method handles all three operations in one call
-    pub fn create_and_store(&mut self, polygons: Vec<&Polygon>) -> Uuid {
+    pub fn create_and_store(&mut self, polygon_ids: Vec<&Uuid>) -> Option<Uuid> {
         // 1. Declare the solid
-        let solid = new_solid(polygons);
+        let solid = new_solid(polygon_ids);
+
+        if solid.is_none() {
+            return None;
+        }
+
+        let solid = solid.expect("None failed to return in solid storage");
 
         // 2. Store it in the registry (self is already mutably borrowed)
-        let id = solid.id;
+        let id = solid.id.clone();
         self.solids.insert(id, solid);
 
         // 3. Return the ID of the stored solid
-        id
+        Some(id)
     }
 
     /// Remove a solid from the registry
