@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::validate_distinct_ids;
+use crate::domain::{validate_distinct_ids, SegmentRegistry};
 
 /// A polygon in 3D space
 pub struct Polygon {
@@ -13,10 +13,17 @@ pub struct Polygon {
 }
 
 /// Create a new polygon
-pub fn new_polygon(segment_ids: Vec<&Uuid>) -> Option<Polygon> {
-    // Validate the segment IDs
+pub fn new_polygon(segment_ids: Vec<&Uuid>, segment_registry: &SegmentRegistry) -> Option<Polygon> {
+    // Validate that the segment IDs are distinct
     if !validate_distinct_ids(&segment_ids) {
         return None;
+    }
+
+    // Validate that the segment IDs are in the registry
+    for &segment_id in &segment_ids {
+        if !segment_registry.get(segment_id).is_some() {
+            return None;
+        }
     }
 
     // TODO: Validate that the segments are coplanar
@@ -50,9 +57,13 @@ impl Default for PolygonRegistry {
 impl PolygonRegistry {
     /// Declare, store, and return the ID of a polygon
     /// This method handles all three operations in one call
-    pub fn create_and_store(&mut self, segment_ids: Vec<&Uuid>) -> Option<Uuid> {
+    pub fn create_and_store(
+        &mut self,
+        segment_ids: Vec<&Uuid>,
+        segment_registry: &SegmentRegistry,
+    ) -> Option<Uuid> {
         // 1. Declare the polygon
-        let polygon = new_polygon(segment_ids);
+        let polygon = new_polygon(segment_ids, segment_registry);
 
         if polygon.is_none() {
             return None;

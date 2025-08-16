@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::validate_distinct_ids;
+use crate::domain::{validate_distinct_ids, VertexRegistry};
 
 /// A segment in 3D space
 pub struct Segment {
@@ -15,11 +15,22 @@ pub struct Segment {
 }
 
 /// Create a new segment
-pub fn new_segment(start_vertex: &Uuid, end_vertex: &Uuid) -> Option<Segment> {
+pub fn new_segment(
+    start_vertex: &Uuid,
+    end_vertex: &Uuid,
+    vertex_registry: &VertexRegistry,
+) -> Option<Segment> {
     // Validate that the start and end vertices are distinct
     let vertices = vec![start_vertex, end_vertex];
     let is_valid = validate_distinct_ids(&vertices);
     if !is_valid {
+        return None;
+    }
+
+    if !vertex_registry.get(start_vertex).is_some() {
+        return None;
+    }
+    if !vertex_registry.get(end_vertex).is_some() {
         return None;
     }
 
@@ -49,9 +60,14 @@ impl Default for SegmentRegistry {
 impl SegmentRegistry {
     /// Declare, store, and return the ID of a segment
     /// This method handles all three operations in one call
-    pub fn create_and_store(&mut self, start_vertex: &Uuid, end_vertex: &Uuid) -> Option<Uuid> {
+    pub fn create_and_store(
+        &mut self,
+        start_vertex: &Uuid,
+        end_vertex: &Uuid,
+        vertex_registry: &VertexRegistry,
+    ) -> Option<Uuid> {
         // 1. Declare the segment
-        let segment = new_segment(start_vertex, end_vertex);
+        let segment = new_segment(start_vertex, end_vertex, vertex_registry);
 
         if segment.is_none() {
             return None;

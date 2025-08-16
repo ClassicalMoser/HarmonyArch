@@ -57,78 +57,94 @@ pub fn create_rectangular_solid(
 
     // Phase 3: Create all segments using registry methods
     let bottom_left = segment_registry
-        .create_and_store(&bottom_back_left, &bottom_front_left)
+        .create_and_store(&bottom_back_left, &bottom_front_left, vertex_registry)
         .expect("Failed to create bottom left segment");
     let bottom_back = segment_registry
-        .create_and_store(&bottom_back_right, &bottom_back_left)
+        .create_and_store(&bottom_back_right, &bottom_back_left, vertex_registry)
         .expect("Failed to create bottom back segment");
     let bottom_right = segment_registry
-        .create_and_store(&bottom_front_right, &bottom_back_right)
+        .create_and_store(&bottom_front_right, &bottom_back_right, vertex_registry)
         .expect("Failed to create bottom right segment");
     let bottom_front = segment_registry
-        .create_and_store(&bottom_front_left, &bottom_front_right)
+        .create_and_store(&bottom_front_left, &bottom_front_right, vertex_registry)
         .expect("Failed to create bottom front segment");
 
     let top_left = segment_registry
-        .create_and_store(&top_back_left, &top_front_left)
+        .create_and_store(&top_back_left, &top_front_left, vertex_registry)
         .expect("Failed to create top left segment");
     let top_back = segment_registry
-        .create_and_store(&top_back_right, &top_back_left)
+        .create_and_store(&top_back_right, &top_back_left, vertex_registry)
         .expect("Failed to create top back segment");
     let top_right = segment_registry
-        .create_and_store(&top_front_right, &top_back_right)
+        .create_and_store(&top_front_right, &top_back_right, vertex_registry)
         .expect("Failed to create top right segment");
     let top_front = segment_registry
-        .create_and_store(&top_front_left, &top_front_right)
+        .create_and_store(&top_front_left, &top_front_right, vertex_registry)
         .expect("Failed to create top front segment");
 
     let back_left = segment_registry
-        .create_and_store(&bottom_back_left, &top_back_left)
+        .create_and_store(&bottom_back_left, &top_back_left, vertex_registry)
         .expect("Failed to create back left segment");
     let back_right = segment_registry
-        .create_and_store(&bottom_back_right, &top_back_right)
+        .create_and_store(&bottom_back_right, &top_back_right, vertex_registry)
         .expect("Failed to create back right segment");
     let front_right = segment_registry
-        .create_and_store(&bottom_front_right, &top_front_right)
+        .create_and_store(&bottom_front_right, &top_front_right, vertex_registry)
         .expect("Failed to create front right segment");
     let front_left = segment_registry
-        .create_and_store(&bottom_front_left, &top_front_left)
+        .create_and_store(&bottom_front_left, &top_front_left, vertex_registry)
         .expect("Failed to create front left segment");
 
     // Phase 5: Create all polygons using registry methods
     let bottom_face = polygon_registry
-        .create_and_store(vec![
-            &bottom_left,
-            &bottom_back,
-            &bottom_right,
-            &bottom_front,
-        ])
+        .create_and_store(
+            vec![&bottom_left, &bottom_back, &bottom_right, &bottom_front],
+            segment_registry,
+        )
         .expect("Failed to create bottom face");
     let top_face = polygon_registry
-        .create_and_store(vec![&top_right, &top_back, &top_left, &top_front])
+        .create_and_store(
+            vec![&top_right, &top_back, &top_left, &top_front],
+            segment_registry,
+        )
         .expect("Failed to create top face");
     let back_face = polygon_registry
-        .create_and_store(vec![&back_left, &bottom_back, &back_right, &top_back])
+        .create_and_store(
+            vec![&back_left, &bottom_back, &back_right, &top_back],
+            segment_registry,
+        )
         .expect("Failed to create back face");
     let front_face = polygon_registry
-        .create_and_store(vec![&front_left, &bottom_front, &top_front, &front_right])
+        .create_and_store(
+            vec![&front_left, &bottom_front, &top_front, &front_right],
+            segment_registry,
+        )
         .expect("Failed to create front face");
     let left_face = polygon_registry
-        .create_and_store(vec![&bottom_left, &front_left, &top_left, &back_left])
+        .create_and_store(
+            vec![&bottom_left, &front_left, &top_left, &back_left],
+            segment_registry,
+        )
         .expect("Failed to create left face");
     let right_face = polygon_registry
-        .create_and_store(vec![&bottom_right, &back_right, &top_right, &front_right])
+        .create_and_store(
+            vec![&bottom_right, &back_right, &top_right, &front_right],
+            segment_registry,
+        )
         .expect("Failed to create right face");
 
     // Phase 7: Create the solid using registry method
-    let solid_id = solid_registry.create_and_store(vec![
-        &bottom_face,
-        &top_face,
-        &back_face,
-        &front_face,
-        &left_face,
-        &right_face,
-    ]);
+    let solid_id = solid_registry.create_and_store(
+        vec![
+            &bottom_face,
+            &top_face,
+            &back_face,
+            &front_face,
+            &left_face,
+            &right_face,
+        ],
+        polygon_registry,
+    );
 
     // Phase 8: Return the ID of the solid if it was created successfully
 

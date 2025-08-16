@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::validate_distinct_ids;
+use crate::domain::{validate_distinct_ids, PolygonRegistry};
 
 /// A solid in 3D space
 pub struct Solid {
@@ -13,10 +13,20 @@ pub struct Solid {
 }
 
 /// Create a new solid
-pub fn new_solid(polygon_ids: Vec<&Uuid>) -> Option<Solid> {
+pub fn new_solid(polygon_ids: Vec<&Uuid>, polygon_registry: &PolygonRegistry) -> Option<Solid> {
     if !validate_distinct_ids(&polygon_ids) {
         return None;
     }
+
+    // Validate that the polygon IDs are in the registry
+    for &polygon_id in &polygon_ids {
+        if !polygon_registry.get(polygon_id).is_some() {
+            return None;
+        }
+    }
+
+    // TODO: Validate that the solid is watertight
+
     // copy the polygon IDs to owned UUIDs
     let polygons: Vec<Uuid> = polygon_ids.iter().map(|p| **p).collect();
     let new_solid = Solid {
@@ -43,9 +53,13 @@ impl Default for SolidRegistry {
 impl SolidRegistry {
     /// Declare, store, and return the ID of a solid
     /// This method handles all three operations in one call
-    pub fn create_and_store(&mut self, polygon_ids: Vec<&Uuid>) -> Option<Uuid> {
+    pub fn create_and_store(
+        &mut self,
+        polygon_ids: Vec<&Uuid>,
+        polygon_registry: &PolygonRegistry,
+    ) -> Option<Uuid> {
         // 1. Declare the solid
-        let solid = new_solid(polygon_ids);
+        let solid = new_solid(polygon_ids, polygon_registry);
 
         if solid.is_none() {
             return None;
