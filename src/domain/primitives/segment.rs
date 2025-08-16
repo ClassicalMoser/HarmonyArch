@@ -2,8 +2,6 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::{validate_distinct_ids, VertexRegistry};
-
 /// A segment in 3D space
 pub struct Segment {
     /// The unique identifier of the segment
@@ -15,32 +13,14 @@ pub struct Segment {
 }
 
 /// Create a new segment
-pub fn new_segment(
-    start_vertex: &Uuid,
-    end_vertex: &Uuid,
-    vertex_registry: &VertexRegistry,
-) -> Option<Segment> {
-    // Validate that the start and end vertices are distinct
-    let vertices = vec![start_vertex, end_vertex];
-    let is_valid = validate_distinct_ids(&vertices);
-    if !is_valid {
-        return None;
-    }
-
-    if !vertex_registry.get(start_vertex).is_some() {
-        return None;
-    }
-    if !vertex_registry.get(end_vertex).is_some() {
-        return None;
-    }
-
+fn new_segment(start_vertex: &Uuid, end_vertex: &Uuid) -> Segment {
     // Create the new segment
     let new_segment = Segment {
         id: Uuid::new_v4(),
         start_vertex: start_vertex.clone(),
         end_vertex: end_vertex.clone(),
     };
-    Some(new_segment)
+    new_segment
 }
 
 /// A registry of segments
@@ -64,27 +44,16 @@ impl SegmentRegistry {
 impl SegmentRegistry {
     /// Declare, store, and return the ID of a segment
     /// This method handles all three operations in one call
-    pub fn create_and_store(
-        &mut self,
-        start_vertex: &Uuid,
-        end_vertex: &Uuid,
-        vertex_registry: &VertexRegistry,
-    ) -> Option<Uuid> {
+    pub fn create_and_store(&mut self, start_vertex: &Uuid, end_vertex: &Uuid) -> Uuid {
         // 1. Declare the segment
-        let segment = new_segment(start_vertex, end_vertex, vertex_registry);
-
-        if segment.is_none() {
-            return None;
-        }
-
-        let segment = segment.expect("None failed to return in segment storage");
+        let segment = new_segment(start_vertex, end_vertex);
 
         // 2. Store it in the registry (self is already mutably borrowed)
         let id = segment.id.clone();
         self.segments.insert(id, segment);
 
         // 3. Return the ID of the stored segment
-        Some(id)
+        id
     }
 
     /// Remove a segment from the registry

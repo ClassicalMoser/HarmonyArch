@@ -2,45 +2,23 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::{validate_distinct_ids, SegmentRegistry};
-
 /// A polygon in 3D space
 pub struct Polygon {
     /// The unique identifier of the polygon
     pub id: Uuid,
     /// Reference to the segments of the polygon
     pub segments: Vec<Uuid>,
-    /// Reference to the registry that contains the segments
-    pub segment_registry: Uuid,
 }
 
 /// Create a new polygon
-pub fn new_polygon(segment_ids: Vec<&Uuid>, segment_registry: &SegmentRegistry) -> Option<Polygon> {
-    // Validate that the segment IDs are distinct
-    if !validate_distinct_ids(&segment_ids) {
-        return None;
-    }
-
-    // Validate that the segment IDs are in the registry
-    for &segment_id in &segment_ids {
-        if !segment_registry.get(segment_id).is_some() {
-            return None;
-        }
-    }
-
-    // TODO: Validate that the segments are coplanar
-
-    // Copy the segment IDs to owned UUIDs
-    let segments: Vec<Uuid> = segment_ids.iter().map(|id| **id).collect();
-
+pub fn new_polygon(segment_ids: Vec<&Uuid>) -> Polygon {
     // Create polygon with owned UUIDs
     let new_polygon = Polygon {
         id: Uuid::new_v4(),
-        segments,
-        segment_registry: segment_registry.id.clone(),
+        segments: segment_ids.iter().map(|id| **id).collect(),
     };
 
-    Some(new_polygon)
+    new_polygon
 }
 
 /// A registry of polygons
@@ -64,26 +42,16 @@ impl PolygonRegistry {
 impl PolygonRegistry {
     /// Declare, store, and return the ID of a polygon
     /// This method handles all three operations in one call
-    pub fn create_and_store(
-        &mut self,
-        segment_ids: Vec<&Uuid>,
-        segment_registry: &SegmentRegistry,
-    ) -> Option<Uuid> {
+    pub fn create_and_store(&mut self, segment_ids: Vec<&Uuid>) -> Uuid {
         // 1. Declare the polygon
-        let polygon = new_polygon(segment_ids, segment_registry);
-
-        if polygon.is_none() {
-            return None;
-        }
-
-        let polygon = polygon.expect("None failed to return in polygon storage");
+        let polygon = new_polygon(segment_ids);
 
         // 2. Store it in the registry (self is already mutably borrowed)
         let id = polygon.id.clone();
         self.polygons.insert(id, polygon);
 
         // 3. Return the ID of the stored polygon
-        Some(id)
+        id
     }
 
     /// Remove a polygon from the registry

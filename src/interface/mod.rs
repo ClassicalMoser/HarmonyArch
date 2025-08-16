@@ -4,7 +4,7 @@ use bevy::pbr::*;
 use bevy::prelude::*;
 
 use crate::application::{create_mesh_from_solid, create_rectangular_solid};
-use crate::domain::{PolygonRegistry, SegmentRegistry, SolidRegistry, VertexRegistry};
+use crate::domain::GeometryRegistry;
 
 mod camera;
 mod lighting;
@@ -35,36 +35,26 @@ fn setup_world(
     mesh_config: Res<MeshConfig>,
 ) {
     // Create domain registries
-    let mut vertex_registry = VertexRegistry::create_new();
-    let mut segment_registry = SegmentRegistry::create_new();
-    let mut polygon_registry = PolygonRegistry::create_new();
-    let mut solid_registry = SolidRegistry::create_new();
+    let mut geometry_registry = GeometryRegistry::create_new();
 
     // Create domain objects for the cube
-    let solid_id = create_rectangular_solid(
-        2.0,
-        2.5,
-        3.5,
-        &mut vertex_registry,
-        &mut segment_registry,
-        &mut polygon_registry,
-        &mut solid_registry,
-    )
-    .expect("Failed to create cube for setup world");
+    let solid_id = create_rectangular_solid(2.0, 2.5, 3.5, &mut geometry_registry);
 
     // Get a reference to the solid in the registry
-    let solid = solid_registry
+    let solid = geometry_registry
+        .solids
         .get(&solid_id)
         .expect("Failed to get solid from registry");
 
     // Generate mesh from domain objects
-    let mesh = create_mesh_from_solid(
-        &solid,
-        &polygon_registry,
-        &segment_registry,
-        &vertex_registry,
-    );
+    let mesh = create_mesh_from_solid(&solid, &geometry_registry);
     let mesh_handle = meshes.add(mesh);
+
+    // Get a reference to the segment registry
+    let segment_registry = &geometry_registry.segments;
+
+    // Get a reference to the vertex registry
+    let vertex_registry = &geometry_registry.vertices;
 
     // Create material
     let material = StandardMaterial {

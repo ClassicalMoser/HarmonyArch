@@ -18,8 +18,12 @@ pub mod polygon;
 /// A solid is a watertight 3D object composed of polygons
 pub mod solid;
 
+/// A vector is a distance in 3D space
+pub mod vector;
+
 pub use point::*;
 pub use polygon::*;
 pub use segment::*;
 pub use solid::*;
+pub use vector::*;
 pub use vertex::*;

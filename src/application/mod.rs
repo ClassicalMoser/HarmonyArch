@@ -4,9 +4,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use uuid::Uuid;
 
-use crate::domain::{
-    Polygon, PolygonRegistry, Segment, SegmentRegistry, Solid, Vertex, VertexRegistry,
-};
+use crate::domain::{GeometryRegistry, Polygon, Segment, Solid, Vertex};
 
 /// Triangulated face data for rendering
 #[derive(Debug)]
@@ -296,12 +294,11 @@ fn triangulate_polygon_for_rendering(
 
 /// Creates a Bevy mesh from a domain Solid using the provided registries
 /// This function translates our domain model into a renderable mesh with proper triangulation
-pub fn create_mesh_from_solid(
-    solid: &Solid,
-    polygon_registry: &PolygonRegistry,
-    segment_registry: &SegmentRegistry,
-    vertex_registry: &VertexRegistry,
-) -> Mesh {
+pub fn create_mesh_from_solid(solid: &Solid, geometry_registry: &GeometryRegistry) -> Mesh {
+    let polygon_registry = &geometry_registry.polygons;
+    let segment_registry = &geometry_registry.segments;
+    let vertex_registry = &geometry_registry.vertices;
+
     println!("\n=== MESH GENERATION START ===");
     println!(
         "Creating mesh from solid with {} polygons",

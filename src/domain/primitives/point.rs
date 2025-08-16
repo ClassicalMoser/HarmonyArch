@@ -31,3 +31,12 @@ impl Point {
         self.z = position.z as f32;
     }
 }
+
+/// Create the origin point of the world
+pub fn create_origin() -> Point {
+    Point {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+    }
+}
