@@ -35,10 +35,10 @@ fn setup_world(
     mesh_config: Res<MeshConfig>,
 ) {
     // Create domain registries
-    let mut vertex_registry = VertexRegistry::default();
-    let mut segment_registry = SegmentRegistry::default();
-    let mut polygon_registry = PolygonRegistry::default();
-    let mut solid_registry = SolidRegistry::default();
+    let mut vertex_registry = VertexRegistry::create_new();
+    let mut segment_registry = SegmentRegistry::create_new();
+    let mut polygon_registry = PolygonRegistry::create_new();
+    let mut solid_registry = SolidRegistry::create_new();
 
     // Create domain objects for the cube
     let solid_id = create_rectangular_solid(

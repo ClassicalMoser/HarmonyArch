@@ -10,6 +10,8 @@ pub struct Polygon {
     pub id: Uuid,
     /// Reference to the segments of the polygon
     pub segments: Vec<Uuid>,
+    /// Reference to the registry that contains the segments
+    pub segment_registry: Uuid,
 }
 
 /// Create a new polygon
@@ -35,6 +37,7 @@ pub fn new_polygon(segment_ids: Vec<&Uuid>, segment_registry: &SegmentRegistry) 
     let new_polygon = Polygon {
         id: Uuid::new_v4(),
         segments,
+        segment_registry: segment_registry.id.clone(),
     };
 
     Some(new_polygon)
@@ -42,13 +45,17 @@ pub fn new_polygon(segment_ids: Vec<&Uuid>, segment_registry: &SegmentRegistry) 
 
 /// A registry of polygons
 pub struct PolygonRegistry {
+    /// Unique identifier for the registry
+    pub id: Uuid,
     /// The polygons in the registry
     pub polygons: HashMap<Uuid, Polygon>,
 }
 
-impl Default for PolygonRegistry {
-    fn default() -> Self {
+impl PolygonRegistry {
+    /// Create a new polygon registry
+    pub fn create_new() -> Self {
         Self {
+            id: Uuid::new_v4(),
             polygons: HashMap::new(),
         }
     }

@@ -45,13 +45,17 @@ pub fn new_segment(
 
 /// A registry of segments
 pub struct SegmentRegistry {
+    /// Unique identifier for the registry
+    pub id: Uuid,
     /// The segments in the registry
     pub segments: HashMap<Uuid, Segment>,
 }
 
-impl Default for SegmentRegistry {
-    fn default() -> Self {
+impl SegmentRegistry {
+    /// Create a new segment registry
+    pub fn create_new() -> Self {
         Self {
+            id: Uuid::new_v4(),
             segments: HashMap::new(),
         }
     }

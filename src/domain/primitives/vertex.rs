@@ -22,13 +22,17 @@ pub fn new_vertex(position: Point) -> Vertex {
 
 /// A registry of vertices
 pub struct VertexRegistry {
+    /// Unique identifier for the registry
+    pub id: Uuid,
     /// The vertices in the registry
     pub vertices: HashMap<Uuid, Vertex>,
 }
 
-impl Default for VertexRegistry {
-    fn default() -> Self {
+impl VertexRegistry {
+    /// Create a new vertex registry
+    pub fn create_new() -> Self {
         Self {
+            id: Uuid::new_v4(),
             vertices: HashMap::new(),
         }
     }

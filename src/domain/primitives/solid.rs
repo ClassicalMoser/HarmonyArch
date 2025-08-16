@@ -38,13 +38,17 @@ pub fn new_solid(polygon_ids: Vec<&Uuid>, polygon_registry: &PolygonRegistry) ->
 
 /// A registry of solids
 pub struct SolidRegistry {
+    /// Unique identifier for the registry
+    pub id: Uuid,
     /// The solids in the registry
     pub solids: HashMap<Uuid, Solid>,
 }
 
-impl Default for SolidRegistry {
-    fn default() -> Self {
+impl SolidRegistry {
+    /// Create a new solid registry
+    pub fn create_new() -> Self {
         Self {
+            id: Uuid::new_v4(),
             solids: HashMap::new(),
         }
     }
