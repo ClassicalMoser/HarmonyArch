@@ -1,6 +1,7 @@
 use crate::domain::Point;
 
 /// Define a vector in 3D space
+#[derive(Debug, Clone)]
 pub struct Vector {
     /// The east component of the distance in meters.
     /// Positive values are to the east.

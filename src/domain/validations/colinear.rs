@@ -18,13 +18,13 @@
 ///
 /// # Examples
 /// ```
-/// use harmony_arch::domain::{Vertex, Point, validate_colinear_vertices};
+/// use harmony_arch::domain::{Vertex, Point, validate_collinear_vertices};
 ///
 /// let v1 = Vertex { id: uuid::Uuid::new_v4(), position: Point { x: 0.0, y: 0.0, z: 0.0 } };
 /// let v2 = Vertex { id: uuid::Uuid::new_v4(), position: Point { x: 1.0, y: 0.0, z: 0.0 } };
 /// let v3 = Vertex { id: uuid::new_v4(), position: Point { x: 2.0, y: 0.0, z: 0.0 } };
 ///
-/// assert!(validate_colinear_vertices(&[&v1, &v2, &v3], 0.001));
+/// assert!(validate_collinear_vertices(&[&v1, &v2, &v3], 0.001));
 /// ```
 use crate::domain::{Vector, Vertex};
 
