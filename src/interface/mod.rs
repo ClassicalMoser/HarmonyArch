@@ -9,10 +9,12 @@ use crate::domain::GeometryRegistry;
 mod camera;
 mod lighting;
 mod mesh_creation;
+mod segment_outlines;
 
 use camera::{camera_controls, spawn_camera, CameraConfig};
 use lighting::spawn_lights;
 use mesh_creation::MeshConfig;
+use segment_outlines::{render_segment_outlines_2d, GeometryRegistryResource};
 
 /// A plugin for the interface
 pub struct InterfacePlugin;
@@ -22,7 +24,7 @@ impl Plugin for InterfacePlugin {
         app.insert_resource(CameraConfig::default())
             .insert_resource(MeshConfig::default())
             .add_systems(Startup, setup_world)
-            .add_systems(Update, camera_controls);
+            .add_systems(Update, (camera_controls, render_segment_outlines_2d));
     }
 }
 
@@ -40,21 +42,31 @@ fn setup_world(
     // Create domain objects for the cube
     let solid_id = create_rectangular_solid(2.0, 2.5, 3.5, &mut geometry_registry);
 
-    // Get a reference to the solid in the registry
-    let solid = geometry_registry
-        .solids
-        .get(&solid_id)
-        .expect("Failed to get solid from registry");
+    // Extract information before moving geometry_registry
+    let (solid_id_for_log, polygon_count, segment_count, vertex_count, mesh_handle) = {
+        let solid = geometry_registry
+            .solids
+            .get(&solid_id)
+            .expect("Failed to get solid from registry");
 
-    // Generate mesh from domain objects
-    let mesh = create_mesh_from_solid(&solid, &geometry_registry);
-    let mesh_handle = meshes.add(mesh);
+        // Generate mesh from domain objects
+        let mesh = create_mesh_from_solid(&solid, &geometry_registry);
+        let mesh_handle = meshes.add(mesh);
 
-    // Get a reference to the segment registry
-    let segment_registry = &geometry_registry.segments;
+        // Extract values for logging
+        (
+            solid.id,
+            solid.polygons.len(),
+            geometry_registry.segments.segments.len(),
+            geometry_registry.vertices.vertices.len(),
+            mesh_handle,
+        )
+    };
 
-    // Get a reference to the vertex registry
-    let vertex_registry = &geometry_registry.vertices;
+    // Store geometry registry for 2D overlay rendering
+    commands.insert_resource(GeometryRegistryResource {
+        registry: geometry_registry,
+    });
 
     // Create material
     let material = StandardMaterial {
@@ -77,8 +89,8 @@ fn setup_world(
     spawn_camera(&mut commands, &camera_config);
 
     println!("Created cube from domain objects:");
-    println!("  Solid ID: {}", solid.id);
-    println!("  Polygons: {}", solid.polygons.len());
-    println!("  Segments: {}", segment_registry.segments.len());
-    println!("  Vertices: {}", vertex_registry.vertices.len());
+    println!("  Solid ID: {}", solid_id_for_log);
+    println!("  Polygons: {}", polygon_count);
+    println!("  Segments: {}", segment_count);
+    println!("  Vertices: {}", vertex_count);
 }
