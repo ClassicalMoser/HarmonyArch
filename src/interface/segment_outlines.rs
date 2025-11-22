@@ -14,7 +14,12 @@ pub fn render_segment_outlines_2d(
     mut gizmos: Gizmos,
     camera_query: Query<(&Camera, &GlobalTransform), With<Camera3d>>,
     geometry_registry: Res<GeometryRegistryResource>,
+    ui_state: Res<crate::interface::ui::UiState>,
 ) {
+    // Only render if outlines are enabled
+    if !ui_state.show_outlines {
+        return;
+    }
     let Ok((camera, camera_transform)) = camera_query.single() else {
         return;
     };
@@ -24,41 +29,29 @@ pub fn render_segment_outlines_2d(
 
     // Draw each segment as a line in 3D world space
     for segment in segment_registry.segments.values() {
-        // Get start vertex position
-        let start_vertex = match vertex_registry.get(&segment.start_vertex) {
+        // Get first vertex position
+        let vertex1 = match vertex_registry.get(&segment.vertices[0]) {
             Some(v) => v,
             None => continue,
         };
-        let start_pos_3d = Vec3::new(
-            start_vertex.position.x,
-            start_vertex.position.y,
-            start_vertex.position.z,
-        );
+        let pos1_3d = Vec3::new(vertex1.position.x, vertex1.position.y, vertex1.position.z);
 
-        // Get end vertex position
-        let end_vertex = match vertex_registry.get(&segment.end_vertex) {
+        // Get second vertex position
+        let vertex2 = match vertex_registry.get(&segment.vertices[1]) {
             Some(v) => v,
             None => continue,
         };
-        let end_pos_3d = Vec3::new(
-            end_vertex.position.x,
-            end_vertex.position.y,
-            end_vertex.position.z,
-        );
+        let pos2_3d = Vec3::new(vertex2.position.x, vertex2.position.y, vertex2.position.z);
 
         // Check if both points are visible on screen (optional optimization)
-        let start_visible = camera
-            .world_to_viewport(camera_transform, start_pos_3d)
-            .is_ok();
-        let end_visible = camera
-            .world_to_viewport(camera_transform, end_pos_3d)
-            .is_ok();
+        let pos1_visible = camera.world_to_viewport(camera_transform, pos1_3d).is_ok();
+        let pos2_visible = camera.world_to_viewport(camera_transform, pos2_3d).is_ok();
 
         // Draw the line if at least one point is visible
-        if start_visible || end_visible {
+        if pos1_visible || pos2_visible {
             // Draw the line directly in 3D world space at the segment positions
             // This locks it to the geometry - it moves with the scene
-            gizmos.line(start_pos_3d, end_pos_3d, Color::WHITE);
+            gizmos.line(pos1_3d, pos2_3d, Color::WHITE);
         }
     }
 }

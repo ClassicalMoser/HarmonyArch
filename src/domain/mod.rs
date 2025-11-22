@@ -3,11 +3,11 @@ use uuid::Uuid;
 /// Domain layer for the application
 /// Pure domain logic, no external dependencies, no ECS, no Bevy
 pub mod primitives;
-/// Validation functions for geometry integrity
-pub mod validations;
+/// Constraint solving system
+pub mod solver;
 
 pub use primitives::*;
-pub use validations::*;
+// Note: solver exports are explicit to avoid ambiguous glob re-exports
 
 /// Constant to define unit size for coordinate system
 pub const METERS_PER_UNIT: f32 = 1.0;

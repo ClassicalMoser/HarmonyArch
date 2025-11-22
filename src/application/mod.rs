@@ -51,22 +51,22 @@ fn triangulate_polygon_for_rendering(
         let segment = &segments[segment_id];
         println!(
             "  Segment {}: connects vertex {} to vertex {}",
-            segment_id, segment.start_vertex, segment.end_vertex
+            segment_id, segment.vertices[0], segment.vertices[1]
         );
 
         // Count vertex occurrences (each should appear exactly twice in a valid polygon)
-        *vertex_counts.entry(segment.start_vertex).or_insert(0) += 1;
-        *vertex_counts.entry(segment.end_vertex).or_insert(0) += 1;
+        *vertex_counts.entry(segment.vertices[0]).or_insert(0) += 1;
+        *vertex_counts.entry(segment.vertices[1]).or_insert(0) += 1;
 
         // Build bidirectional connectivity graph
         vertex_connections
-            .entry(segment.start_vertex)
+            .entry(segment.vertices[0])
             .or_insert_with(Vec::new)
-            .push(segment.end_vertex);
+            .push(segment.vertices[1]);
         vertex_connections
-            .entry(segment.end_vertex)
+            .entry(segment.vertices[1])
             .or_insert_with(Vec::new)
-            .push(segment.start_vertex);
+            .push(segment.vertices[0]);
     }
 
     println!("Step 1 - Loop Closure Validation:");

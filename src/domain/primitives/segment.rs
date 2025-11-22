@@ -3,24 +3,58 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 /// A segment in 3D space
+///
+/// Segments are unordered pairs of vertices - the order doesn't matter
+/// for geometric relationships, only for rendering/display purposes.
 pub struct Segment {
     /// The unique identifier of the segment
     pub id: Uuid,
-    /// Reference to the start point of the segment
-    pub start_vertex: Uuid,
-    /// Reference to the end point of the segment
-    pub end_vertex: Uuid,
+    /// The two vertices that define the segment (unordered pair)
+    /// Stored in normalized order (smaller UUID first) for consistent equality
+    pub vertices: [Uuid; 2],
 }
 
 /// Create a new segment
-fn new_segment(start_vertex: &Uuid, end_vertex: &Uuid) -> Segment {
-    // Create the new segment
-    let new_segment = Segment {
-        id: Uuid::new_v4(),
-        start_vertex: start_vertex.clone(),
-        end_vertex: end_vertex.clone(),
+///
+/// Normalizes vertex order (smaller UUID first) for consistent storage
+fn new_segment(vertex1: &Uuid, vertex2: &Uuid) -> Segment {
+    // Normalize: always store smaller UUID first
+    let vertices = if vertex1 < vertex2 {
+        [*vertex1, *vertex2]
+    } else {
+        [*vertex2, *vertex1]
     };
-    new_segment
+
+    Segment {
+        id: Uuid::new_v4(),
+        vertices,
+    }
+}
+
+impl Segment {
+    /// Check if this segment contains the given vertex
+    pub fn contains_vertex(&self, vertex_id: &Uuid) -> bool {
+        self.vertices[0] == *vertex_id || self.vertices[1] == *vertex_id
+    }
+
+    /// Get both vertices as a tuple (for compatibility/rendering)
+    /// Returns in the order they were originally provided (if needed)
+    /// For geometric operations, use `vertices` field directly
+    pub fn vertices_tuple(&self) -> (Uuid, Uuid) {
+        (self.vertices[0], self.vertices[1])
+    }
+
+    /// Get the other vertex (given one vertex)
+    /// Returns None if the vertex is not part of this segment
+    pub fn other_vertex(&self, vertex_id: &Uuid) -> Option<Uuid> {
+        if self.vertices[0] == *vertex_id {
+            Some(self.vertices[1])
+        } else if self.vertices[1] == *vertex_id {
+            Some(self.vertices[0])
+        } else {
+            None
+        }
+    }
 }
 
 /// A registry of segments
