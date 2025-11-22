@@ -12,11 +12,17 @@ mod mesh_creation;
 mod segment_outlines;
 mod ui;
 
-use camera::{camera_controls, spawn_camera, update_camera_projection, CameraConfig};
+use camera::{
+    camera_controls, handle_camera_view_events, spawn_camera, update_camera_projection,
+    CameraConfig,
+};
 use lighting::spawn_lights;
 use mesh_creation::MeshConfig;
-use segment_outlines::{render_segment_outlines_2d, GeometryRegistryResource};
-use ui::{handle_ui_interactions, setup_ui, toggle_mesh_visibility, ToggleableMesh, update_button_appearance, UiState};
+use segment_outlines::{render_segment_outlines_2d, GeometryRegistryResource, SolidId};
+use ui::{
+    handle_camera_view_buttons, handle_ui_interactions, setup_ui, toggle_mesh_visibility,
+    update_button_appearance, CameraViewEvent, ToggleableMesh, UiState,
+};
 
 /// A plugin for the interface
 pub struct InterfacePlugin;
@@ -27,12 +33,15 @@ impl Plugin for InterfacePlugin {
             .insert_resource(MeshConfig::default())
             .insert_resource(UiState::default())
             .add_systems(Startup, (setup_world, setup_ui))
+            .add_event::<CameraViewEvent>()
             .add_systems(
                 Update,
                 (
                     camera_controls,
                     render_segment_outlines_2d,
                     handle_ui_interactions,
+                    handle_camera_view_buttons,
+                    handle_camera_view_events,
                     update_button_appearance,
                     toggle_mesh_visibility,
                     update_camera_projection,
@@ -54,7 +63,7 @@ fn setup_world(
 
     // Create domain objects for the first cube
     let solid_id1 = create_rectangular_solid(2.0, 2.5, 3.5, &mut geometry_registry);
-    
+
     // Create domain objects for the second cube
     let solid_id2 = create_rectangular_solid(1.5, 2.0, 2.5, &mut geometry_registry);
 
@@ -107,6 +116,7 @@ fn setup_world(
         MeshMaterial3d(material_handle1),
         Transform::from_xyz(-2.0, 0.0, 1.0),
         ToggleableMesh,
+        SolidId(solid_id1),
     ));
 
     // Spawn the second cube entity, offset to the right
@@ -115,6 +125,7 @@ fn setup_world(
         MeshMaterial3d(material_handle2),
         Transform::from_xyz(2.0, 0.0, -1.0),
         ToggleableMesh,
+        SolidId(solid_id2),
     ));
 
     // Spawn camera and lighting

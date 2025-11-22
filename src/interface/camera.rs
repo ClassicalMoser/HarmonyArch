@@ -1,9 +1,11 @@
-use crate::interface::ui::UiState;
+use crate::interface::ui::{CameraViewEvent, UiState};
 use bevy::prelude::*;
 use bevy::render::camera::ScalingMode;
 
 /// Zoom speed for orthographic view (viewport height units per second)
 const ORTHO_ZOOM_SPEED: f32 = 5.0;
+/// Default distance from origin for camera views
+const CAMERA_VIEW_DISTANCE: f32 = 8.0;
 
 /// Camera configuration and setup
 #[derive(Resource, Clone)]
@@ -197,5 +199,29 @@ pub fn update_camera_projection(
         }
     } else if !matches!(projection.as_ref(), Projection::Perspective(_)) {
         *projection = Projection::Perspective(PerspectiveProjection::default());
+    }
+}
+
+/// Handle camera view change events
+pub fn handle_camera_view_events(
+    mut camera_query: Query<&mut Transform, With<Camera>>,
+    mut camera_view_events: EventReader<CameraViewEvent>,
+) {
+    let Ok(mut camera_transform) = camera_query.single_mut() else {
+        return;
+    };
+
+    for event in camera_view_events.read() {
+        let (position, up) = match event {
+            CameraViewEvent::Front => (Vec3::new(0.0, 0.0, CAMERA_VIEW_DISTANCE), Vec3::Y),
+            CameraViewEvent::Top => (Vec3::new(0.0, CAMERA_VIEW_DISTANCE, 0.0), Vec3::NEG_Z),
+            CameraViewEvent::Left => (Vec3::new(-CAMERA_VIEW_DISTANCE, 0.0, 0.0), Vec3::Y),
+            CameraViewEvent::Right => (Vec3::new(CAMERA_VIEW_DISTANCE, 0.0, 0.0), Vec3::Y),
+            CameraViewEvent::Back => (Vec3::new(0.0, 0.0, -CAMERA_VIEW_DISTANCE), Vec3::Y),
+            CameraViewEvent::Bottom => (Vec3::new(0.0, -CAMERA_VIEW_DISTANCE, 0.0), Vec3::Z),
+        };
+
+        camera_transform.translation = position;
+        *camera_transform = camera_transform.looking_at(Vec3::ZERO, up);
     }
 }
