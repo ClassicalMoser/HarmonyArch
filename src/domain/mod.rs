@@ -5,12 +5,9 @@ use uuid::Uuid;
 pub mod primitives;
 /// Validation functions for geometry integrity
 pub mod validations;
-/// Geometric constraints for maintaining design rules
-pub mod constraints;
 
 pub use primitives::*;
 pub use validations::*;
-pub use constraints::*;
 
 /// Constant to define unit size for coordinate system
 pub const METERS_PER_UNIT: f32 = 1.0;
